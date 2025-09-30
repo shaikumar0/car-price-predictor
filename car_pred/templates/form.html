@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Price Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: grid;
+            gap: 15px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚗 Car Price Prediction</h2>
+        <form id="predictionForm" >
+            <input type="text" name="Car_Name" placeholder="Car Name" required>
+            <input type="number" step="0.1" name="Year" placeholder="Year" required minlength="4" maxlength="4">
+            <input type="number" step="0.1" name="Present_Price" placeholder="Present Price (in lakhs)" required>
+            <input type="number" step="0.1" name="Kms_Driven" placeholder="Kms Driven" required>
+
+            <select name="Fuel_Type" required>
+                <option value="" disabled selected>Select Fuel Type</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="CNG">CNG</option>
+            </select>
+
+            <select name="Seller_Type" required>
+                <option value="" disabled selected>Select Seller Type</option>
+                <option value="Dealer">Dealer</option>
+                <option value="Individual">Individual</option>
+            </select>
+
+            <select name="Transmission" required>
+                <option value="" disabled selected>Select Transmission</option>
+                <option value="Manual">Manual</option>
+                <option value="Automatic">Automatic</option>
+            </select>
+
+            <input type="number" step="0.1" name="Owner" placeholder="Number of Owners" required>
+            <button type="submit">Predict Price</button>
+        </form>
+        <h3 id="result"></h3>
+    </div>
+     
+    <script>
+        document.getElementById("predictionForm").addEventListener("submit", predictHandler);
+
+        async function predictHandler(e) {
+            e.preventDefault();
+            let formDataObj = {};
+            new FormData(this).forEach((value, key) => formDataObj[key] = value);
+            console.log(formDataObj);
+            try {
+                let response = await fetch("/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formDataObj)
+                });
+                try {
+
+                    let result = await response.json();
+                    document.getElementById("result").innerText = `Predicted Car Price: ₹${result} lakhs`;
+                }
+                catch {
+                    document.getElementById("result").innerText = `Error`;
+                }
+            }
+            catch {
+                console.log("error occurred while predicting")
+            }
+        }
+    </script>
+         
+</body>
+</html>
